@@ -1,7 +1,7 @@
 import Head from "next/head"
-import { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 
-export default function Home() {
+const Home = () => {
   const [count, setCount] = useState(0)
   const [timePassed, setTimePassed] = useState(0)
   const requestedAnimationId = useRef(0)
@@ -25,8 +25,10 @@ export default function Home() {
         newLastRunTiming = currentTiming
       }
 
-      requestedAnimationId.current = requestAnimationFrame((newCurrentTiming) =>
-        test(newCurrentTiming, newLastRunTiming)
+      requestedAnimationId.current = requestAnimationFrame(
+        (newCurrentTiming) => {
+          test(newCurrentTiming, newLastRunTiming)
+        }
       )
     }
 
@@ -51,3 +53,5 @@ export default function Home() {
     </>
   )
 }
+
+export default Home
