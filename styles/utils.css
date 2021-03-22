@@ -1,0 +1,29 @@
+* {
+  font-family: sans-serif;
+}
+
+h1,
+h2,
+h3 {
+  font-family: cursive;
+  letter-spacing: 1.5px;
+}
+
+a {
+  color: rebeccapurple;
+}
+
+a:focus,
+a:hover {
+  font-style: italic;
+  text-decoration-style: double;
+  outline: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+body {
+  background: whitesmoke;
+}
