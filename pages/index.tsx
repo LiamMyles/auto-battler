@@ -1,43 +1,19 @@
 import Head from "next/head"
-import React, { useEffect, useRef, useState } from "react"
+import React, { useCallback, useState } from "react"
+
+import { useGameLoop } from "Hooks/use-game-loop"
 
 const Home = () => {
   const [count, setCount] = useState(0)
-  const [timePassed, setTimePassed] = useState(0)
-  const requestedAnimationId = useRef(0)
-  const startTime = useRef(0)
 
-  useEffect(() => {
-    startTime.current = Date.now()
-    const test = (currentTiming: number, lastRunTiming?: number) => {
-      let newLastRunTiming = lastRunTiming ?? 0
-      const speed = 100
-      const secondsPassed = Math.round(
-        Math.abs(startTime.current - Date.now()) / 1000
-      )
-      setTimePassed(secondsPassed)
+  const logicToLoop = useCallback(() => {
+    setCount((previousState) => previousState + 1)
+  }, [setCount])
 
-      if (
-        lastRunTiming === undefined ||
-        currentTiming - lastRunTiming > speed
-      ) {
-        setCount((previousState) => previousState + 1)
-        newLastRunTiming = currentTiming
-      }
-
-      requestedAnimationId.current = requestAnimationFrame(
-        (newCurrentTiming) => {
-          test(newCurrentTiming, newLastRunTiming)
-        }
-      )
-    }
-
-    requestAnimationFrame(test)
-    return () => {
-      cancelAnimationFrame(requestedAnimationId.current)
-      setCount(0)
-    }
-  }, [])
+  const { secondsPassed, stopLoop, startLoop } = useGameLoop({
+    logicToLoop,
+    speed: 1000,
+  })
 
   return (
     <>
@@ -48,8 +24,26 @@ const Home = () => {
       <h1>Hello world</h1>
       <p>What is this going to become?</p>
       <p>Loop Count {count}</p>
-      <p>Time Passed {timePassed}</p>
-      <p>Count a second {count / timePassed}</p>
+      <p>Time Passed {secondsPassed}</p>
+      <p>Count a second {count / secondsPassed}</p>
+      <button
+        type="button"
+        onClick={() => {
+          setCount(0)
+          stopLoop()
+        }}
+      >
+        Stop Me!
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          setCount(0)
+          startLoop()
+        }}
+      >
+        Start Me!
+      </button>
     </>
   )
 }

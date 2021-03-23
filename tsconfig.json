@@ -4,7 +4,8 @@
     "baseUrl": ".",
     "paths": {
       "Components/*": ["components/*"],
-      "Styles/*": ["styles/*"]
+      "Styles/*": ["styles/*"],
+      "Hooks/*": ["hooks/*"]
     },
     "lib": [
       "dom",
