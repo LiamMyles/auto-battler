@@ -17,7 +17,6 @@ export const useGameLoop = ({
   const startTime = useRef(0)
 
   useEffect(() => {
-    console.log("we changed")
     startTime.current = Date.now()
 
     if (requestedAnimationId.current !== 0) {
