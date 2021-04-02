@@ -2,17 +2,40 @@ import Head from "next/head"
 import React, { useCallback, useState } from "react"
 
 import { useGameLoop } from "Hooks/use-game-loop"
+import { useMoneyReducer } from "Hooks/use-money-reducer"
 
 const Home = () => {
-  const [count, setCount] = useState(0)
+  const [addCount, setAddCount] = useState(0)
+  const [removeCount, setRemoveCount] = useState(0)
+  const [state, dispatch] = useMoneyReducer({
+    copperCoin: 0,
+    silverCoin: 99,
+    goldCoin: 99,
+    platinumCoin: 0,
+  })
 
-  const logicToLoop = useCallback(() => {
-    setCount((previousState) => previousState + 1)
-  }, [setCount])
+  const logicToLoopAdd = useCallback(() => {
+    setAddCount((previousCount) => {
+      return previousCount + 1
+    })
+    dispatch({ type: "ADD_ONE_COPPER" })
+  }, [dispatch])
 
-  const { secondsPassed, stopLoop, startLoop } = useGameLoop({
-    logicToLoop,
-    speed: 1000,
+  const logicToLoopRemove = useCallback(() => {
+    setRemoveCount((previousCount) => {
+      return previousCount + 1
+    })
+    dispatch({ type: "REMOVE_ONE_COPPER" })
+  }, [dispatch])
+
+  const { stopLoop: removeStopLoop, startLoop: removeStartLoop } = useGameLoop({
+    logicToLoop: logicToLoopRemove,
+    speed: 500,
+  })
+
+  const { stopLoop: addStopLoop, startLoop: addStartLoop } = useGameLoop({
+    logicToLoop: logicToLoopAdd,
+    speed: 100,
   })
 
   return (
@@ -23,14 +46,18 @@ const Home = () => {
       </Head>
       <h1>Hello world</h1>
       <p>What is this going to become?</p>
-      <p>Loop Count {count}</p>
-      <p>Time Passed {secondsPassed}</p>
-      <p>Count a second {count / secondsPassed}</p>
+      <p>Copper Added {addCount}</p>
+      <p>Copper Removed {removeCount}</p>
+      <h1>Coinage</h1>
+      <p>Copper: {state.copperCoin}</p>
+      <p>Silver: {state.silverCoin}</p>
+      <p>Gold: {state.goldCoin}</p>
+      <p>Platinum: {state.platinumCoin}</p>
       <button
         type="button"
         onClick={() => {
-          setCount(0)
-          stopLoop()
+          removeStopLoop()
+          addStopLoop()
         }}
       >
         Stop Me!
@@ -38,8 +65,8 @@ const Home = () => {
       <button
         type="button"
         onClick={() => {
-          setCount(0)
-          startLoop()
+          removeStartLoop()
+          addStartLoop()
         }}
       >
         Start Me!
