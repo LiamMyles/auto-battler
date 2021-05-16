@@ -15,7 +15,21 @@ interface RemoveOneCopperAction {
   type: "REMOVE_ONE_COPPER"
 }
 
-type Action = AddOneCopperAction | RemoveOneCopperAction
+interface AddSomeCopperAction {
+  type: "ADD_SOME_COPPER"
+  someCopper: number
+}
+
+interface RemoveSomeCopperAction {
+  type: "REMOVE_SOME_COPPER"
+  someCopper: number
+}
+
+type Action =
+  | AddOneCopperAction
+  | RemoveOneCopperAction
+  | AddSomeCopperAction
+  | RemoveSomeCopperAction
 
 const reducer: React.Reducer<State, Action> = (state, action) => {
   switch (action.type) {
@@ -23,6 +37,27 @@ const reducer: React.Reducer<State, Action> = (state, action) => {
       const coinsToAdd = 1
       const totalCopperCoins =
         coinsToAdd +
+        state.copperCoin +
+        state.silverCoin * 100 +
+        state.goldCoin * 10000 +
+        state.platinumCoin * 1000000
+
+      const newCoins = {
+        copperCoin: Math.trunc(totalCopperCoins % 100),
+        silverCoin: Math.trunc((totalCopperCoins / 100) % 100),
+        goldCoin: Math.trunc((totalCopperCoins / 10000) % 100),
+        platinumCoin: Math.trunc(totalCopperCoins / 1000000),
+      }
+
+      return {
+        ...state,
+        ...newCoins,
+      }
+    }
+
+    case "ADD_SOME_COPPER": {
+      const totalCopperCoins =
+        action.someCopper +
         state.copperCoin +
         state.silverCoin * 100 +
         state.goldCoin * 10000 +
@@ -49,6 +84,35 @@ const reducer: React.Reducer<State, Action> = (state, action) => {
         state.goldCoin * 10000 +
         state.platinumCoin * 1000000 -
         coinsToRemove
+
+      if (totalCopperCoins < 0) {
+        return {
+          copperCoin: 0,
+          silverCoin: 0,
+          goldCoin: 0,
+          platinumCoin: 0,
+        }
+      }
+
+      const newCoins = {
+        copperCoin: Math.trunc(totalCopperCoins % 100),
+        silverCoin: Math.trunc((totalCopperCoins / 100) % 100),
+        goldCoin: Math.trunc((totalCopperCoins / 10000) % 100),
+        platinumCoin: Math.trunc(totalCopperCoins / 1000000),
+      }
+
+      return {
+        ...newCoins,
+      }
+    }
+
+    case "REMOVE_SOME_COPPER": {
+      const totalCopperCoins =
+        state.copperCoin +
+        state.silverCoin * 100 +
+        state.goldCoin * 10000 +
+        state.platinumCoin * 1000000 -
+        action.someCopper
 
       if (totalCopperCoins < 0) {
         return {

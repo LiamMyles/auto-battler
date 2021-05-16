@@ -303,4 +303,96 @@ describe("useMoneyReducer", () => {
       expect(actualState).toEqual(expectedState)
     })
   })
+  describe("Action ADD_SOME_COPPER", () => {
+    it.each`
+      someCopperToAdd | expectedCopper | expectedSilver | expectedGold | expectedPlatinum
+      ${10}           | ${10}          | ${0}           | ${0}         | ${0}
+      ${100}          | ${0}           | ${1}           | ${0}         | ${0}
+      ${1000}         | ${0}           | ${10}          | ${0}         | ${0}
+      ${10000}        | ${0}           | ${0}           | ${1}         | ${0}
+      ${100000}       | ${0}           | ${0}           | ${10}        | ${0}
+      ${1000000}      | ${0}           | ${0}           | ${0}         | ${1}
+      ${10000000}     | ${0}           | ${0}           | ${0}         | ${10}
+      ${100000000}    | ${0}           | ${0}           | ${0}         | ${100}
+      ${1000000000}   | ${0}           | ${0}           | ${0}         | ${1000}
+      ${1234567890}   | ${90}          | ${78}          | ${56}        | ${1234}
+    `(
+      "should get correct results for adding $someCopperToAdd copper",
+      ({
+        someCopperToAdd,
+        expectedCopper,
+        expectedSilver,
+        expectedGold,
+        expectedPlatinum,
+      }) => {
+        const { result } = renderHook(() => useMoneyReducer())
+        act(() => {
+          result.current[1]({
+            type: "ADD_SOME_COPPER",
+            someCopper: someCopperToAdd,
+          })
+        })
+        const actualState = result.current[0]
+
+        const expectedState = {
+          copperCoin: expectedCopper,
+          silverCoin: expectedSilver,
+          goldCoin: expectedGold,
+          platinumCoin: expectedPlatinum,
+        }
+
+        expect(actualState).toEqual(expectedState)
+      }
+    )
+  })
+
+  describe("Action REMOVE_SOME_COPPER", () => {
+    it.each`
+      someCopperToRemove | expectedCopper | expectedSilver | expectedGold | expectedPlatinum
+      ${10}              | ${90}          | ${99}          | ${99}        | ${999}
+      ${100}             | ${0}           | ${99}          | ${99}        | ${999}
+      ${1_000}           | ${0}           | ${90}          | ${99}        | ${999}
+      ${10_000}          | ${0}           | ${0}           | ${99}        | ${999}
+      ${100_000}         | ${0}           | ${0}           | ${90}        | ${999}
+      ${1_000_000}       | ${0}           | ${0}           | ${0}         | ${999}
+      ${10_000_000}      | ${0}           | ${0}           | ${0}         | ${990}
+      ${100_000_000}     | ${0}           | ${0}           | ${0}         | ${900}
+      ${123_456_789}     | ${11}          | ${32}          | ${54}        | ${876}
+      ${10_000_000_000}  | ${0}           | ${0}           | ${0}         | ${0}
+    `(
+      "should get correct results for adding $someCopperToRemove copper from 1000 platinum",
+      ({
+        someCopperToRemove,
+        expectedCopper,
+        expectedSilver,
+        expectedGold,
+        expectedPlatinum,
+      }) => {
+        const startingState = {
+          copperCoin: 0,
+          silverCoin: 0,
+          goldCoin: 0,
+          platinumCoin: 1000,
+        }
+
+        const { result } = renderHook(() => useMoneyReducer(startingState))
+        act(() => {
+          result.current[1]({
+            type: "REMOVE_SOME_COPPER",
+            someCopper: someCopperToRemove,
+          })
+        })
+        const actualState = result.current[0]
+
+        const expectedState = {
+          copperCoin: expectedCopper,
+          silverCoin: expectedSilver,
+          goldCoin: expectedGold,
+          platinumCoin: expectedPlatinum,
+        }
+
+        expect(actualState).toEqual(expectedState)
+      }
+    )
+  })
 })
